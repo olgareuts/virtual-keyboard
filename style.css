@@ -1,0 +1,59 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 50px;
+  width: 800px;
+  margin: auto;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  height: 200px;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.keyboard {
+  padding: 10px;
+  border: 2px solid black;
+  border-radius: 5px;
+  background-color:rgb(87, 126, 152);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.key {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  margin: 0 3px;
+  background: rgb(33, 32, 32);
+  border: 1px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  color: aliceblue;
+  font-weight: bold;
+  box-shadow: 2px 2px 5px rgb(62, 60, 60);
+}
+
+.key:hover {
+  background-color:rgb(62, 60, 60);
+}
+
+.key_medium {
+  width: 85px;
+}
+
+.key_long {
+  width: 367px;
+}
+
+
