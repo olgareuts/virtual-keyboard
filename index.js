@@ -14,6 +14,8 @@ const container = document.createElement('div');
 const keyboard = document.createElement('div');
 const input = document.createElement('textarea');
 const subtitle = document.createElement('span');
+let isUpperCase = false;
+
 subtitle.innerHTML = 'Клавиатура создана в операционной системе macOS';
 input.autofocus = true;
 document.body.append(container);
@@ -55,7 +57,7 @@ let rows = document.getElementsByClassName('row');
   }
 
 let keyboardKeys = document.getElementsByClassName('key');
-keyboardKeys[13].classList.add('key_medium');
+keyboardKeys[13].classList.add('key_medium', 'backspace');
 keyboardKeys[14].classList.add('key_medium');
 keyboardKeys[28].classList.add('key_medium');
 keyboardKeys[40].classList.add('key_medium');
@@ -69,6 +71,7 @@ keyboardKeys[58].classList.add('key_small');
 
 document.addEventListener('keydown', function(event) {
   if (keysCode.includes(event.code)) {
+    input.focus();
     let pos = keysCode.indexOf(event.code);
     keyboardKeys[pos].classList.add('key_active');
   }
@@ -79,8 +82,37 @@ document.addEventListener('keyup', function(event) {
     let pos = keysCode.indexOf(event.code);
     keyboardKeys[pos].classList.remove('key_active');
   }
-  console.log(event.code)
 });
+
+document.querySelector('.keyboard').addEventListener('click', function(event) {
+  if (event.target.classList.contains('key')) {
+    let code = keys.indexOf(event.target.innerHTML);
+    let pos = input.selectionStart;
+    if (event.target.classList.contains('backspace')) {
+      input.value = input.value.slice(0,input.selectionStart-1) + input.value.slice(input.selectionStart);
+      input.selectionStart = pos - 1;
+    } else if (keysCode[code] === 'Backquote') {
+      input.value += '`';
+    } else if (keysCode[code] === 'Tab') {
+      input.value += '    '; 
+    } else if (keysCode[code] === 'CapsLock') {
+      isUpperCase ? isUpperCase = false : isUpperCase = true; 
+      event.target.classList.toggle('key_colored');
+    } else {
+      if (isUpperCase) {
+        input.value = input.value.slice(0,input.selectionStart)+ event.target.innerHTML + input.value.slice(input.selectionStart);
+        pos+=2;
+      } else {
+        input.value = input.value.slice(0,input.selectionStart) + event.target.innerHTML.toLowerCase() + input.value.slice(input.selectionStart);
+        pos+=2;
+      } 
+      input.selectionStart = pos - 1;
+    }
+    input.focus();
+     console.log(input.selectionStart)
+  };
+})
+
 
 
 

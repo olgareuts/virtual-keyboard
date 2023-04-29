@@ -62,11 +62,19 @@
   width: 55px;
 }
 
-.key_active {
+.key_active,
+.key:active {
   background-color:rgb(62, 60, 60);
   transform: translateY(1px);
   box-shadow: 5px 5px 4px rgb(62, 60, 60);
 }
+
+.key_colored {
+  color:rgb(53, 221, 243);
+}
+
+
+
 
 
 
