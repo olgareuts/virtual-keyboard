@@ -43,7 +43,8 @@
   cursor: pointer;
   color: aliceblue;
   font-weight: bold;
-  box-shadow: 3px 3px 4px rgb(62, 60, 60);
+  box-shadow: 4px 4px 3px rgb(62, 60, 60);
+  transition: 0.1s;
 }
 
 .key:hover {
@@ -64,9 +65,9 @@
 
 .key_active,
 .key:active {
-  background-color:rgb(62, 60, 60);
+  background-color:rgb(72, 111, 118);
   transform: translateY(1px);
-  box-shadow: 5px 5px 4px rgb(62, 60, 60);
+  box-shadow: 1px 1px 1px rgb(62, 60, 60);
 }
 
 .key_colored {
