@@ -1,10 +1,10 @@
-const keys = ['~', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '&larr;',
+const keys = ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '&larr;',
   'Tab', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', '\\',
   'CapsLock', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', "'", '&crarr;',
   'Shift', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/', '&uarr;', 'Shift',
   'Ctrl', 'Alt', ' ', 'Alt', 'Ctrl', '&larr;', '&darr;', '&rarr;', 'Del'];
-const keysRU = ['ё', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '&larr;',
-  'Tab', 'Й', 'Ц', 'У', 'К', 'Е', 'Н', 'Г', 'Ш', 'Щ', 'З', 'Х', 'Ъ', '\\',
+const keysRU = [']', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '&larr;',
+  'Tab', 'Й', 'Ц', 'У', 'К', 'Е', 'Н', 'Г', 'Ш', 'Щ', 'З', 'Х', 'Ъ', 'Ё',
   'CapsLock', 'Ф', 'Ы', 'В', 'А', 'П', 'Р', 'О', 'Л', 'Д', 'Ж', 'Э', '&crarr;',
   'Shift', 'Я', 'Ч', 'С', 'М', 'И', 'Т', 'Ь', 'Б', 'Ю', '.', '&uarr;', 'Shift',
   'Ctrl', 'Alt', ' ', 'Alt', 'Ctrl', '&larr;', '&darr;', '&rarr;', 'Del'];
@@ -21,6 +21,38 @@ const subtitle = document.createElement('span');
 const rows = document.getElementsByClassName('row');
 const keyboardKeys = document.getElementsByClassName('key');
 let language = 'en';
+
+const addSymbols = () => {
+  const buttons = document.querySelectorAll('.key');
+  if (language === 'en') {
+    const symbols = ['~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '"', '<', '>', '?'];
+    const elements = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 25, 26, 27, 38, 39, 49, 50, 51];
+    for (let i = 0; i < elements.length; i += 1) {
+      buttons[elements[i]].innerHTML = symbols[i];
+    }
+  } else {
+    const symbolsRU = ['[', '!', '"', '№', '%', ':', ',', '.', ';', '(', ')', '_', '+', '?'];
+    const elementsRU = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 51];
+    for (let i = 0; i < elementsRU.length; i += 1) {
+      buttons[elementsRU[i]].innerHTML = symbolsRU[i];
+    }
+  }
+};
+
+const removeSymbols = () => {
+  const buttons = document.querySelectorAll('.key');
+  if (language === 'en') {
+    const elements = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 25, 26, 27, 38, 39, 49, 50, 51];
+    for (let i = 0; i < elements.length; i += 1) {
+      buttons[elements[i]].innerHTML = keys[elements[i]];
+    }
+  } else {
+    const elementsRU = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 51];
+    for (let i = 0; i < elementsRU.length; i += 1) {
+      buttons[elementsRU[i]].innerHTML = keysRU[elementsRU[i]];
+    }
+  }
+};
 
 const getLocalStorage = () => {
   if (localStorage.getItem('language')) {
@@ -74,6 +106,16 @@ const addClickTaskHandler = () => {
       if (pos === 28) {
         keyboardKeys[pos].classList.toggle('key_colored');
       }
+      if (pos === 14) {
+        const index = input.selectionStart;
+        event.preventDefault();
+        input.value = `${input.value.slice(0, index)}\t${input.value.slice(index)}`;
+        input.selectionStart = index + 1;
+        input.selectionEnd = index + 1;
+      }
+      if (pos === 41 || pos === 53) {
+        addSymbols();
+      }
     }
   });
 
@@ -81,6 +123,9 @@ const addClickTaskHandler = () => {
     if (keysCode.includes(event.code)) {
       const pos = keysCode.indexOf(event.code);
       keyboardKeys[pos].classList.remove('key_active');
+      if (pos === 41 || pos === 53) {
+        removeSymbols();
+      }
     }
   });
 
@@ -88,35 +133,44 @@ const addClickTaskHandler = () => {
     if (event.target.classList.contains('key')) {
       const code = keys.indexOf(event.target.innerHTML);
       let pos = input.selectionStart;
-      if (event.target.classList.contains('backspace')) {
-        input.value = input.value.slice(0, pos - 1) + input.value.slice(pos);
+      const { value } = input;
+      const { target } = event;
+      if (target.classList.contains('backspace')) {
+        input.value = value.slice(0, pos - 1) + value.slice(pos);
         input.selectionStart = pos - 1;
         input.selectionEnd = pos - 1;
-      } else if (keysCode[code] === 'Backquote') {
-        input.value += '`';
       } else if (keysCode[code] === 'Tab') {
-        input.value += '\t';
+        input.value = `${value.slice(0, pos)}\t${value.slice(pos)}`;
+        input.selectionStart = pos + 1;
+        input.selectionEnd = pos + 1;
       } else if (keysCode[code] === 'CapsLock') {
-        event.target.classList.toggle('key_colored');
+        target.classList.toggle('key_colored');
       } else if (keysCode[code] === 'Delete') {
-        input.value = input.value.slice(0, pos) + input.value.slice(pos + 1);
+        input.value = value.slice(0, pos) + value.slice(pos + 1);
         input.selectionStart = pos;
         input.selectionEnd = pos;
-      } else if (keysCode[code] === 'ShiftLeft' || keysCode[code] === 'ShiftRight' || keysCode[code] === 'ControlLeft'
-        || keysCode[code] === 'ControlRight' || keysCode[code] === 'AltLeft' || keysCode[code] === 'AltRight') {
+      } else if (event.target.innerHTML === 'Shift' || event.target.innerHTML === 'Ctrl' || event.target.innerHTML === 'Alt') {
         input.focus();
       } else if (event.target.classList.contains('enter')) {
-        input.value = `${input.value.slice(0, pos)}\r\n${input.value.slice(pos)}`;
+        input.value = `${value.slice(0, pos)}\r\n${value.slice(pos)}`;
       } else {
         if (keyboardKeys[28].classList.contains('key_colored') || event.shiftKey === true) {
-          input.value = input.value.slice(0, pos) + event.target.innerHTML + input.value.slice(pos);
+          if (target.innerHTML === '&amp;') {
+            input.value = `${value.slice(0, pos)}&${value.slice(pos)}`;
+          } else if (target.innerHTML === '&lt;') {
+            input.value = `${value.slice(0, pos)}<${value.slice(pos)}`;
+          } else if (target.innerHTML === '&gt;') {
+            input.value = `${value.slice(0, pos)}>${value.slice(pos)}`;
+          } else {
+            input.value = value.slice(0, pos) + target.innerHTML + value.slice(pos);
+          }
           pos += 2;
         } else {
-          input.value = input.value.slice(0, pos) + event.target.innerHTML.toLowerCase()
-          + input.value.slice(pos);
+          input.value = value.slice(0, pos) + target.innerHTML.toLowerCase() + value.slice(pos);
           pos += 2;
         }
         input.selectionStart = pos - 1;
+        input.selectionEnd = pos - 1;
       }
       input.focus();
     }
