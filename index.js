@@ -5,7 +5,7 @@ const keys = ['~', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '
   'Ctrl', 'Alt', ' ', 'Alt', 'Ctrl', '&larr;', '&darr;', '&rarr;', 'Del'];
 const keysRU = ['ё', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '&larr;',
   'Tab', 'Й', 'Ц', 'У', 'К', 'Е', 'Н', 'Г', 'Ш', 'Щ', 'З', 'Х', 'Ъ', '\\',
-  'CapsLock', 'Ф', 'Ы', 'В', 'А', 'П', 'Р', 'О', 'Л', 'Д', 'Ж', "Э", '&crarr;',
+  'CapsLock', 'Ф', 'Ы', 'В', 'А', 'П', 'Р', 'О', 'Л', 'Д', 'Ж', 'Э', '&crarr;',
   'Shift', 'Я', 'Ч', 'С', 'М', 'И', 'Т', 'Ь', 'Б', 'Ю', '.', '&uarr;', 'Shift',
   'Ctrl', 'Alt', ' ', 'Alt', 'Ctrl', '&larr;', '&darr;', '&rarr;', 'Del'];
 const keysCode = ['Backquote', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0', 'Minus', 'Equal', 'Backspace',
@@ -20,14 +20,110 @@ const input = document.createElement('textarea');
 const subtitle = document.createElement('span');
 const rows = document.getElementsByClassName('row');
 const keyboardKeys = document.getElementsByClassName('key');
-let isUpperCase = false;
-let isShift = false;
-let isControl = false;
-let isAlt = false;
 let language = 'en';
 
+const getLocalStorage = () => {
+  if (localStorage.getItem('language')) {
+    language = localStorage.getItem('language');
+  }
+};
+
+const addKey = (j, i) => {
+  const key = document.createElement('div');
+  key.className = 'key';
+  if (language === 'en') {
+    key.innerHTML = keys[j];
+  } else {
+    key.innerHTML = keysRU[j];
+  }
+  rows[i].append(key);
+};
+
+const addKeyContent = (lang) => {
+  const buttons = document.querySelectorAll('.key');
+  if (lang === 'en') {
+    for (let i = 0; i < keys.length; i += 1) {
+      buttons[i].innerHTML = keys[i];
+    }
+  } else {
+    for (let i = 0; i < keysRU.length; i += 1) {
+      buttons[i].innerHTML = keysRU[i];
+    }
+  }
+};
+
+const setLocalStorage = (lang) => {
+  localStorage.setItem('language', lang);
+};
+
+const addClickTaskHandler = () => {
+  document.addEventListener('keydown', (event) => {
+    if (keysCode.includes(event.code)) {
+      input.focus();
+      const pos = keysCode.indexOf(event.code);
+      keyboardKeys[pos].classList.add('key_active');
+      if ((pos === 55 && event.ctrlKey === true) || (pos === 54 && event.altKey === true)) {
+        if (language === 'en') {
+          language = 'ru';
+        } else {
+          language = 'en';
+        }
+        addKeyContent(language);
+        setLocalStorage(language);
+      }
+      if (pos === 28) {
+        keyboardKeys[pos].classList.toggle('key_colored');
+      }
+    }
+  });
+
+  document.addEventListener('keyup', (event) => {
+    if (keysCode.includes(event.code)) {
+      const pos = keysCode.indexOf(event.code);
+      keyboardKeys[pos].classList.remove('key_active');
+    }
+  });
+
+  document.querySelector('.keyboard').addEventListener('click', (event) => {
+    if (event.target.classList.contains('key')) {
+      const code = keys.indexOf(event.target.innerHTML);
+      let pos = input.selectionStart;
+      if (event.target.classList.contains('backspace')) {
+        input.value = input.value.slice(0, pos - 1) + input.value.slice(pos);
+        input.selectionStart = pos - 1;
+        input.selectionEnd = pos - 1;
+      } else if (keysCode[code] === 'Backquote') {
+        input.value += '`';
+      } else if (keysCode[code] === 'Tab') {
+        input.value += '\t';
+      } else if (keysCode[code] === 'CapsLock') {
+        event.target.classList.toggle('key_colored');
+      } else if (keysCode[code] === 'Delete') {
+        input.value = input.value.slice(0, pos) + input.value.slice(pos + 1);
+        input.selectionStart = pos;
+        input.selectionEnd = pos;
+      } else if (keysCode[code] === 'ShiftLeft' || keysCode[code] === 'ShiftRight' || keysCode[code] === 'ControlLeft'
+        || keysCode[code] === 'ControlRight' || keysCode[code] === 'AltLeft' || keysCode[code] === 'AltRight') {
+        input.focus();
+      } else if (event.target.classList.contains('enter')) {
+        input.value = `${input.value.slice(0, pos)}\r\n${input.value.slice(pos)}`;
+      } else {
+        if (keyboardKeys[28].classList.contains('key_colored') || event.shiftKey === true) {
+          input.value = input.value.slice(0, pos) + event.target.innerHTML + input.value.slice(pos);
+          pos += 2;
+        } else {
+          input.value = input.value.slice(0, pos) + event.target.innerHTML.toLowerCase()
+          + input.value.slice(pos);
+          pos += 2;
+        }
+        input.selectionStart = pos - 1;
+      }
+      input.focus();
+    }
+  });
+};
+
 window.onload = () => {
-  subtitle.innerHTML = 'Клавиатура создана в операционной системе macOS. Для переключения языка комбинация: левые ctrl + alt ';
   input.autofocus = true;
   document.body.append(container);
   container.className = 'wrapper';
@@ -68,126 +164,6 @@ window.onload = () => {
   keyboardKeys[55].classList.add('key_small');
   keyboardKeys[57].classList.add('key_small');
   keyboardKeys[58].classList.add('key_small');
+  subtitle.innerHTML = 'Клавиатура создана в операционной системе macOS. Для переключения языка комбинация: левые ctrl + alt.';
   addClickTaskHandler();
-}
-
-const addKey = (j, i) => {
-  const key = document.createElement('div');
-  key.className = 'key';
-  if (language === 'en') {
-    key.innerHTML = keys[j];
-  } else {
-    key.innerHTML = keysRU[j];
-  }
-  rows[i].append(key);
-};
-
-const addKeyContent = (language) => {
-  const buttons = document.querySelectorAll('.key');
-  if (language === 'en') {
-    for (let i = 0; i < keys.length; i += 1) {
-      buttons[i].innerHTML = keys[i];
-    }
-  } else {
-    for (let i = 0; i < keysRU.length; i += 1) {
-      buttons[i].innerHTML = keysRU[i];
-    }
-  }
-};
-
-const getLocalStorage = () => {
-  if (localStorage.getItem('language')) {
-    language = localStorage.getItem('language');
-  } 
-};
-
-const setLocalStorage = (language) => {
-  localStorage.setItem('language', language);
-};
-
-const addClickTaskHandler = () => {
-  document.addEventListener('keydown', (event) => {
-    if (keysCode.includes(event.code)) {
-      input.focus();
-      const pos = keysCode.indexOf(event.code);
-      keyboardKeys[pos].classList.add('key_active');
-      console.log(pos)
-      if (pos === 41 || pos == 53) {
-      isShift = true;
-      }
-      if (pos === 54) {
-        isControl = true;
-      }
-      if (pos === 55) {
-        isAlt = true;
-      }
-      if (isControl && isAlt) {
-        if (language === 'en') {
-          language = 'ru';
-        } else {
-          language = 'en';
-        }
-        addKeyContent(language);
-        setLocalStorage(language);
-      }
-    }
-    console.log(language)
-  });
-
-  document.addEventListener('keyup', (event) => {
-    if (keysCode.includes(event.code)) {
-      const pos = keysCode.indexOf(event.code);
-      keyboardKeys[pos].classList.remove('key_active');
-      if (pos === 41 || pos == 53) {
-        isShift = false;
-      }
-    }
-      isControl = false;
-      isAlt = false;
-  });
-
-  document.querySelector('.keyboard').addEventListener('click', (event) => {
-    if (event.target.classList.contains('key')) {
-      const code = keys.indexOf(event.target.innerHTML);
-      let pos = input.selectionStart;
-      if (event.target.classList.contains('backspace')) {
-        input.value = input.value.slice(0, pos - 1) + input.value.slice(pos);
-        input.selectionStart = pos - 1;
-        input.selectionEnd = pos - 1;
-      } else if (keysCode[code] === 'Backquote') {
-        input.value += '`';
-      } else if (keysCode[code] === 'Tab') {
-        input.value += '    '; 
-      } else if (keysCode[code] === 'CapsLock') {
-        if (isUpperCase) {
-          isUpperCase = false;
-        } else {
-          isUpperCase = true;
-        }
-        event.target.classList.toggle('key_colored');
-      } else if (keysCode[code] === 'Delete') {
-        input.value = input.value.slice(0, pos) + input.value.slice(pos + 1);
-        input.selectionStart = pos;
-        input.selectionEnd = pos;
-      } else if (keysCode[code] === 'ShiftLeft' || keysCode[code] === 'ShiftRight' || keysCode[code] === 'ControlLeft'
-        || keysCode[code] === 'ControlRight' || keysCode[code] === 'AltLeft' || keysCode[code] === 'AltRight') {
-        input.focus();
-      } else if (event.target.classList.contains('enter')) {
-        input.value = input.value.slice(0, pos) + '\r\n' + input.value.slice(pos);
-      } else {
-        if (isUpperCase || isShift) {
-          input.value = input.value.slice(0, pos) + event.target.innerHTML + input.value.slice(pos);
-          pos += 2;
-        } else {
-          input.value = input.value.slice(0, pos) + event.target.innerHTML.toLowerCase() + input.value.slice(pos);
-          pos += 2;
-        }
-        input.selectionStart = pos - 1;
-      }
-      if (isControl && isAlt) {
-
-      }
-      input.focus();
-    }
-  });
 };
