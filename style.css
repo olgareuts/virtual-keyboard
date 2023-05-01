@@ -1,0 +1,75 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 800px;
+  margin: 80px auto;
+}
+
+.input {
+  display: block;
+  width: 92%;
+  height: 210px;
+  border: 1px solid black;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.keyboard {
+  padding: 10px;
+  border: 2px solid black;
+  border-radius: 5px;
+  background-color:rgb(87, 126, 152);
+  margin-bottom: 10px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.key {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  margin: 0 3px;
+  background: rgb(33, 32, 32);
+  border: 1px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  color: aliceblue;
+  font-weight: bold;
+  box-shadow: 4px 4px 3px rgb(62, 60, 60);
+  transition: 0.1s;
+}
+
+.key:hover {
+  background-color:rgb(62, 60, 60);
+}
+
+.key_medium {
+  width: 88px;
+}
+
+.key_long {
+  width: 270px;
+}
+
+.key_small  {
+  width: 55px;
+}
+
+.key_active,
+.key:active {
+  background-color:rgb(72, 111, 118);
+  transform: translateY(1px);
+  box-shadow: 1px 1px 1px rgb(62, 60, 60);
+}
+
+.key_colored {
+  color:rgb(53, 221, 243);
+  background-color:rgb(72, 111, 118);
+}
