@@ -94,6 +94,7 @@ const addClickTaskHandler = () => {
       input.focus();
       const pos = keysCode.indexOf(event.code);
       const i = input.selectionStart;
+      const { value } = input;
       keyboardKeys[pos].classList.add('key_active');
       if ((pos === 55 && event.ctrlKey === true) || (pos === 54 && event.altKey === true)) {
         if (language === 'en') {
@@ -108,7 +109,7 @@ const addClickTaskHandler = () => {
       } else if (pos === 14) {
         const index = input.selectionStart;
         event.preventDefault();
-        input.value = `${input.value.slice(0, index)}\t${input.value.slice(index)}`;
+        input.value = `${value.slice(0, index)}\t${value.slice(index)}`;
         input.selectionStart = index + 1;
         input.selectionEnd = index + 1;
       } else if (pos === 41 || pos === 53) {
@@ -117,18 +118,17 @@ const addClickTaskHandler = () => {
         input.focus();
       } else if (event.key !== keyboardKeys[pos].innerHTML) {
         if (keyboardKeys[28].classList.contains('key_colored') || event.shiftKey === true) {
-          const { value } = input;
           if (keyboardKeys[pos].innerHTML === '&amp;') {
-            input.value = `${value.slice(0, pos)}&${value.slice(pos)}`;
+            input.value = `${value.slice(0, i)}&${value.slice(i)}`;
           } else if (keyboardKeys[pos].innerHTML === '&lt;') {
-            input.value = `${value.slice(0, pos)}<${value.slice(pos)}`;
+            input.value = `${value.slice(0, i)}<${value.slice(i)}`;
           } else if (keyboardKeys[pos].innerHTML === '&gt;') {
-            input.value = `${value.slice(0, pos)}>${value.slice(pos)}`;
+            input.value = `${value.slice(0, i)}>${value.slice(i)}`;
           } else {
-            input.value = `${input.value.slice(0, i)}${keyboardKeys[pos].innerHTML}${input.value.slice(i)}`;
+            input.value = `${value.slice(0, i)}${keyboardKeys[pos].innerHTML}${value.slice(i)}`;
           }
         } else {
-          input.value = `${input.value.slice(0, i)}${keyboardKeys[pos].innerHTML.toLowerCase()}${input.value.slice(i)}`;
+          input.value = `${value.slice(0, i)}${keyboardKeys[pos].innerHTML.toLowerCase()}${value.slice(i)}`;
         }
         input.selectionStart = i + 1;
         input.selectionEnd = i + 1;
